@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:flutter/material.dart';
@@ -71,9 +72,12 @@ class FirstScreen extends State<HomePage> {
             onPressed: () async {
               var url = Uri.http("user:pass@localhost:5000", "");
               // final response = await http.get(url);
-              final response = await http.post(url, body: {
-                'tag': "AAPL",
-              });
+              final response = await http.post(
+                url,
+                body: jsonEncode(<String, String>{
+                  'tag': "AAPL",
+                }),
+              );
               print(response.body);
               var jsonResponse =
                   convert.jsonDecode(response.body) as Map<String, dynamic>;

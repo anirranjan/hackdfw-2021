@@ -1,3 +1,4 @@
+import json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -16,9 +17,10 @@ def index():
     if request.method == "GET":
         return jsonify({"nothing_to_display": "Nothing to display!"})
     else:
-        tag = request.data["tag"]
+        request_data = json.loads(request.data.decode('utf-8'))
+        tag = str(request_data["tag"])
         return jsonify({
-            "prediction": model.predict(dict[tag])[0][0]
+            "prediction": str(model.predict(dict[tag])[0][0])
         })
 
 if __name__ == "__main__":
