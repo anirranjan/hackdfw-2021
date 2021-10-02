@@ -7,9 +7,9 @@ import pickle
 app = Flask(__name__)
 CORS(app)
 
-model = keras.models.load_model("/kaggle/working/predictor.h5")
+model = keras.models.load_model("model/predictor.h5")
 
-dict = pickle.load(open("/kaggle/working/histories_dict.pkl", "rb"))
+dict = pickle.load(open("model/histories_dict.pkl", "rb"))
 
 @app.route('/', methods = ['POST'])
 def index():
