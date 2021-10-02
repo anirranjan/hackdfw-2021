@@ -3,10 +3,18 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    title: 'HackDFW Submission',
-    home: FirstScreen(),
-  ));
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'HackDFW Submission',
+      home: FirstScreen(),
+    );
+  }
 }
 
 class FirstScreen extends StatelessWidget {
