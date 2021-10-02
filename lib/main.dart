@@ -30,9 +30,6 @@ class HomePage extends StatefulWidget {
 
 class FirstScreen extends State<HomePage> {
   String predictionMessage = 'No Prediction';
-  // String environmentalMessage = '';
-  // String socialMessage = '';
-  // String governanceMessage = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,24 +47,6 @@ class FirstScreen extends State<HomePage> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               )),
-          // Text(environmentalMessage,
-          //     textAlign: TextAlign.center,
-          //     style: TextStyle(
-          //       fontSize: 24,
-          //       fontWeight: FontWeight.bold,
-          //     )),
-          // Text(socialMessage,
-          //     textAlign: TextAlign.center,
-          //     style: TextStyle(
-          //       fontSize: 24,
-          //       fontWeight: FontWeight.bold,
-          //     )),
-          // Text(governanceMessage,
-          //     textAlign: TextAlign.center,
-          //     style: TextStyle(
-          //       fontSize: 24,
-          //       fontWeight: FontWeight.bold,
-          //     )),
           TextButton(
             onPressed: () async {
               var url = Uri.http("user:pass@localhost:5000", "");
@@ -75,21 +54,14 @@ class FirstScreen extends State<HomePage> {
               final response = await http.post(
                 url,
                 body: jsonEncode(<String, String>{
-                  'tag': "AAPL",
+                  "tag": "AAPL",
                 }),
               );
-              print(response.body);
               var jsonResponse =
                   convert.jsonDecode(response.body) as Map<String, dynamic>;
               setState(() {
                 predictionMessage =
                     "Prediction: " + jsonResponse['prediction'].toString();
-                // environmentalMessage = "Environmental: " +
-                //     jsonResponse['environmentalScore'].toString();
-                // socialMessage =
-                //     "Social: " + jsonResponse['socialScore'].toString();
-                // governanceMessage =
-                //     "Governance: " + jsonResponse['governanceScore'].toString();
               });
             },
             child: Text('Get Data'),
