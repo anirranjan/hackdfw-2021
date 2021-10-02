@@ -56,7 +56,7 @@ class FirstScreen extends State<HomePage> {
           FlatButton(
             textColor: Colors.white,
             onPressed: () {
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => SecondScreen()));
+              Navigator.push(context, MaterialPageRoute(builder: (_) => SecondScreen()));
             },
             child: Text('Portfolio Evaluator')
           ),
@@ -152,7 +152,12 @@ class FirstScreen extends State<HomePage> {
   }
 }
 
-class SecondScreen extends State<HomePage> {
+class SecondScreen extends StatefulWidget {
+  @override
+  SecondScreenState createState() => SecondScreenState();
+}
+
+class SecondScreenState extends State<SecondScreen> {
   List<GDPData> _chartData = [
     GDPData('Environmental', 78, Color(0x410F57)),
     GDPData('Governmental', 50, Color(0x027333)),
@@ -164,79 +169,79 @@ class SecondScreen extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text('TITLE'),
-          actions: [
-            FlatButton(
-                textColor: Colors.white,
-                onPressed: () {},
-                child: Text('About ESG')
+        appBar: AppBar(
+            title: Text('TITLE'),
+            actions: [
+              FlatButton(
+                  textColor: Colors.white,
+                  onPressed: () {},
+                  child: Text('About ESG')
+              ),
+              FlatButton(
+                  textColor: Colors.white,
+                  onPressed: () {},
+                  child: Text('Portfolio Evaluator')
+              ),
+            ]
+        ),
+        body: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+                height: 600,
+                width: 600,
+                child: SfCircularChart(
+                    tooltipBehavior: _tooltipBehavior,
+                    annotations: <CircularChartAnnotation>[
+                      CircularChartAnnotation(
+                        widget: Container(
+                            child: Text(_chartData[3].gdp.toString())
+                        ),
+                        radius: '0%',
+                      )
+                    ],
+                    series: <CircularSeries>[
+                      RadialBarSeries<GDPData, String>(
+                          dataSource: _chartData,
+                          pointColorMapper: (GDPData data,_) => data.pointColor,
+                          xValueMapper: (GDPData data,_) => data.continent,
+                          yValueMapper: (GDPData data,_) => data.gdp,
+                          dataLabelSettings: DataLabelSettings(isVisible: true),
+                          enableTooltip: true,
+                          maximumValue: 2500,
+                          cornerStyle: CornerStyle.bothCurve
+                      )]
+                )
             ),
-            FlatButton(
-                textColor: Colors.white,
-                onPressed: () {},
-                child: Text('Portfolio Evaluator')
+            TextButton(
+              onPressed: () async {
+                var url = Uri.http("user:pass@localhost:5000", "");
+                final response = await http.get(url);
+                var jsonResponse =
+                convert.jsonDecode(response.body) as Map<String, dynamic>;
+                setState(() {
+                  _chartData = <GDPData>[];
+                  int e = jsonResponse['environmentalScore'];
+                  int s = jsonResponse['socialScore'];
+                  int g = jsonResponse['governanceScore'];
+                  int average = ((e+s+g)/3).floor();
+                  _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+                  _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+                  _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+                  _chartData.add(GDPData('Average', average, Color(0xE74236)));
+                });
+              },
+              child: Text('Get Data'),
             ),
-          ]
-      ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-              height: 600,
-              width: 600,
-              child: SfCircularChart(
-                  tooltipBehavior: _tooltipBehavior,
-                  annotations: <CircularChartAnnotation>[
-                    CircularChartAnnotation(
-                      widget: Container(
-                          child: Text(_chartData[3].gdp.toString())
-                      ),
-                      radius: '0%',
-                    )
-                  ],
-                  series: <CircularSeries>[
-                    RadialBarSeries<GDPData, String>(
-                        dataSource: _chartData,
-                        pointColorMapper: (GDPData data,_) => data.pointColor,
-                        xValueMapper: (GDPData data,_) => data.continent,
-                        yValueMapper: (GDPData data,_) => data.gdp,
-                        dataLabelSettings: DataLabelSettings(isVisible: true),
-                        enableTooltip: true,
-                        maximumValue: 2500,
-                        cornerStyle: CornerStyle.bothCurve
-                    )]
-              )
-          ),
-          TextButton(
-            onPressed: () async {
-              var url = Uri.http("user:pass@localhost:5000", "");
-              final response = await http.get(url);
-              var jsonResponse =
-              convert.jsonDecode(response.body) as Map<String, dynamic>;
-              setState(() {
-                _chartData = <GDPData>[];
-                int e = jsonResponse['environmentalScore'];
-                int s = jsonResponse['socialScore'];
-                int g = jsonResponse['governanceScore'];
-                int average = ((e+s+g)/3).floor();
-                _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
-                _chartData.add(GDPData('Governmental', g, Color(0x027333)));
-                _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
-                _chartData.add(GDPData('Average', average, Color(0xE74236)));
-              });
-            },
-            child: Text('Get Data'),
-          ),
-          ElevatedButton(
-            child: Text('Go back'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ],
-      )
+            ElevatedButton(
+              child: Text('Go back'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            )
+          ],
+        )
     );
   }
 }
