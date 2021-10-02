@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'HackDFW Submission',
       home: HomePage(),
+      debugShowCheckedModeBanner: false
     );
   }
 }
@@ -29,102 +31,212 @@ class HomePage extends StatefulWidget {
 
 class FirstScreen extends State<HomePage> {
   String testMessage = '';
+
+  List<GDPData> _chartData = [
+    GDPData('Environmental', 78, Color(0x410F57)),
+    GDPData('Governmental', 50, Color(0x027333)),
+    GDPData('Social', 62, Color(0xF2CD32)),
+    GDPData('Average', 63, Color(0xE74236))
+  ];
+  TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
+
+  final Random random = Random();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home'),
+        title: Text('TITLE'),
+        actions: [
+          FlatButton(
+              textColor: Colors.white,
+              onPressed: () {},
+              child: Text('About ESG')
+          ),
+          FlatButton(
+            textColor: Colors.white,
+            onPressed: () {
+              // Navigator.push(context, MaterialPageRoute(builder: (context) => SecondScreen()));
+            },
+            child: Text('Portfolio Evaluator')
+          ),
+        ]
       ),
-      body: Column(
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(testMessage,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Container(
+            height: 600,
+            width: 600,
+            child: SfCircularChart(
+                tooltipBehavior: _tooltipBehavior,
+                annotations: <CircularChartAnnotation>[
+                  CircularChartAnnotation(
+                      widget: Container(
+                          child: Text(_chartData[3].gdp.toString())
+                      ),
+                      radius: '0%',
+                  )
+                ],
+                series: <CircularSeries>[
+                  RadialBarSeries<GDPData, String>(
+                      dataSource: _chartData,
+                      pointColorMapper: (GDPData data,_) => data.pointColor,
+                      xValueMapper: (GDPData data,_) => data.continent,
+                      yValueMapper: (GDPData data,_) => data.gdp,
+                      dataLabelSettings: DataLabelSettings(isVisible: true),
+                      enableTooltip: true,
+                      maximumValue: 2500,
+                      cornerStyle: CornerStyle.bothCurve
+                  )]
+            )
+          ),
           TextButton(
             onPressed: () async {
               var url = Uri.http("user:pass@localhost:5000", "");
               final response = await http.get(url);
               var jsonResponse =
-                  convert.jsonDecode(response.body) as Map<String, dynamic>;
+              convert.jsonDecode(response.body) as Map<String, dynamic>;
               setState(() {
-                testMessage = jsonResponse['greetings'];
+                _chartData = <GDPData>[];
+                int e = jsonResponse['environmentalScore'];
+                int s = jsonResponse['socialScore'];
+                int g = jsonResponse['governanceScore'];
+                int average = ((e+s+g)/3).floor();
+                _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+                _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+                _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+                _chartData.add(GDPData('Average', average, Color(0xE74236)));
               });
             },
             child: Text('Get Data'),
           ),
+          Column (
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Environmental.\nSocial.\nGovernance.',
+                    style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
+              Text('Make your portfolio the\nchange you want to see in\nthe world.',
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.normal))
+            ]
+          )
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SecondScreen()));
-          },
-          label: const Text('Go to Graph Page')),
+      // floatingActionButton: FloatingActionButton.extended(
+      //     onPressed: () {
+      //       Navigator.push(context,
+      //           MaterialPageRoute(builder: (context) => SecondScreen()));
+      //     },
+      //     label: const Text('Go to Graph Page')),
     );
+  }
+
+  /// Get the random value.
+  int _getRandomInt(int min, int max) {
+    return min + random.nextInt(max - min);
+  }
+
+  /// Method to update the chart data.
+  List<GDPData> _getChartData() {
+    int e = _getRandomInt(1,100);
+    int s = _getRandomInt(1,100);
+    int g = _getRandomInt(1,100);
+    int average = ((e+s+g)/3).floor();
+    _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+    _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+    _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+    _chartData.add(GDPData('Average', average, Color(0xE74236)));
+    return _chartData;
   }
 }
 
-class SecondScreen extends StatelessWidget {
-  const SecondScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Graph'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: Text('Go to Example Graph'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ThirdScreen()),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class ThirdScreen extends StatelessWidget {
+class SecondScreen extends State<HomePage> {
   List<GDPData> _chartData = [
-    GDPData('Oceania', 1600, Color(0x410F57)),
-    GDPData('Africa', 2490, Color(0xF8F7E3)),
-    GDPData('S. America', 2900, Color(0x027333)),
-    GDPData('Europe', 23050, Color(0x82BF45)),
-    GDPData('N. America', 24880, Color(0xF2CD32)),
-    GDPData('Asia', 34390, Color(0xE74236))
+    GDPData('Environmental', 78, Color(0x410F57)),
+    GDPData('Governmental', 50, Color(0x027333)),
+    GDPData('Social', 62, Color(0xF2CD32)),
+    GDPData('Average', 63, Color(0xE74236))
   ];
-
   TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Syncfusion Flutter chart'),
-        ),
-        body: Center(
-            child: Container(
-                child: SfCircularChart(
-                    title: ChartTitle(text: 'Continent wise GDP - 2021 \n (in billions of USD)'),
-                    legend: Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
-                    tooltipBehavior: _tooltipBehavior,
-                    series: <CircularSeries>[
-                      RadialBarSeries<GDPData, String>(
-                          dataSource: _chartData,
-                          pointColorMapper: (GDPData data,_) => data.pointColor,
-                          xValueMapper: (GDPData data,_) => data.continent,
-                          yValueMapper: (GDPData data,_) => data.gdp,
-                          dataLabelSettings: DataLabelSettings(isVisible: true),
-                          enableTooltip: true,
-                          maximumValue: 40000,
-                          cornerStyle: CornerStyle.bothCurve
-                      )]
-                )
-            )
-        )
+      appBar: AppBar(
+          title: Text('TITLE'),
+          actions: [
+            FlatButton(
+                textColor: Colors.white,
+                onPressed: () {},
+                child: Text('About ESG')
+            ),
+            FlatButton(
+                textColor: Colors.white,
+                onPressed: () {},
+                child: Text('Portfolio Evaluator')
+            ),
+          ]
+      ),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+              height: 600,
+              width: 600,
+              child: SfCircularChart(
+                  tooltipBehavior: _tooltipBehavior,
+                  annotations: <CircularChartAnnotation>[
+                    CircularChartAnnotation(
+                      widget: Container(
+                          child: Text(_chartData[3].gdp.toString())
+                      ),
+                      radius: '0%',
+                    )
+                  ],
+                  series: <CircularSeries>[
+                    RadialBarSeries<GDPData, String>(
+                        dataSource: _chartData,
+                        pointColorMapper: (GDPData data,_) => data.pointColor,
+                        xValueMapper: (GDPData data,_) => data.continent,
+                        yValueMapper: (GDPData data,_) => data.gdp,
+                        dataLabelSettings: DataLabelSettings(isVisible: true),
+                        enableTooltip: true,
+                        maximumValue: 2500,
+                        cornerStyle: CornerStyle.bothCurve
+                    )]
+              )
+          ),
+          TextButton(
+            onPressed: () async {
+              var url = Uri.http("user:pass@localhost:5000", "");
+              final response = await http.get(url);
+              var jsonResponse =
+              convert.jsonDecode(response.body) as Map<String, dynamic>;
+              setState(() {
+                _chartData = <GDPData>[];
+                int e = jsonResponse['environmentalScore'];
+                int s = jsonResponse['socialScore'];
+                int g = jsonResponse['governanceScore'];
+                int average = ((e+s+g)/3).floor();
+                _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+                _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+                _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+                _chartData.add(GDPData('Average', average, Color(0xE74236)));
+              });
+            },
+            child: Text('Get Data'),
+          ),
+          ElevatedButton(
+            child: Text('Go back'),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          )
+        ],
+      )
     );
   }
 }
