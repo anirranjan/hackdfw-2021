@@ -6,6 +6,11 @@ CORS(app)
 
 @app.route('/', methods = ['GET'])
 def index():
-    return jsonify({'greetings' : 'Hello from the Flask server.'})
+    return jsonify({
+        'environmentalScore' : 2431,
+        'socialScore': 1343,
+        'governanceScore': 972
+        })
+
 if __name__ == "__main__":
     app.run(debug = True)

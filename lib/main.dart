@@ -28,7 +28,9 @@ class HomePage extends StatefulWidget {
 }
 
 class FirstScreen extends State<HomePage> {
-  String testMessage = '';
+  String environmentalMessage = '';
+  String socialMessage = '';
+  String governanceMessage = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +38,28 @@ class FirstScreen extends State<HomePage> {
         title: Text('Home'),
       ),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(testMessage,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Padding(padding: const EdgeInsets.all(10.0)),
+          Text(environmentalMessage,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              )),
+          Text(socialMessage,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              )),
+          Text(governanceMessage,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              )),
           TextButton(
             onPressed: () async {
               var url = Uri.http("user:pass@localhost:5000", "");
@@ -46,7 +67,12 @@ class FirstScreen extends State<HomePage> {
               var jsonResponse =
                   convert.jsonDecode(response.body) as Map<String, dynamic>;
               setState(() {
-                testMessage = jsonResponse['greetings'];
+                environmentalMessage = "Environmental: " +
+                    jsonResponse['environmentalScore'].toString();
+                socialMessage =
+                    "Social: " + jsonResponse['socialScore'].toString();
+                governanceMessage =
+                    "Governance: " + jsonResponse['governanceScore'].toString();
               });
             },
             child: Text('Get Data'),
