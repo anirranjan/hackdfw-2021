@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+
+import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
 void main() {
   runApp(MyApp());
@@ -25,9 +29,7 @@ class HomePage extends StatefulWidget {
 }
 
 class FirstScreen extends State<HomePage> {
-  String environmentalMessage = '';
-  String socialMessage = '';
-  String governanceMessage = '';
+  String predictionMessage = 'No Prediction';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,38 +40,28 @@ class FirstScreen extends State<HomePage> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(padding: const EdgeInsets.all(10.0)),
-          Text(environmentalMessage,
+          const Padding(padding: EdgeInsets.all(10.0)),
+          Text(predictionMessage,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              )),
-          Text(socialMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              )),
-          Text(governanceMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               )),
           TextButton(
             onPressed: () async {
               var url = Uri.http("user:pass@localhost:5000", "");
-              final response = await http.get(url);
+              // final response = await http.get(url);
+              final response = await http.post(
+                url,
+                body: jsonEncode(<String, String>{
+                  "tag": "AAPL",
+                }),
+              );
               var jsonResponse =
                   convert.jsonDecode(response.body) as Map<String, dynamic>;
               setState(() {
-                environmentalMessage = "Environmental: " +
-                    jsonResponse['environmentalScore'].toString();
-                socialMessage =
-                    "Social: " + jsonResponse['socialScore'].toString();
-                governanceMessage =
-                    "Governance: " + jsonResponse['governanceScore'].toString();
+                predictionMessage =
+                    "Prediction: " + jsonResponse['prediction'].toString();
               });
             },
             child: Text('Get Data'),
@@ -97,12 +89,64 @@ class SecondScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
-          child: Text('Go to Home'),
+          child: Text('Go to Example Graph'),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ThirdScreen()),
+            );
           },
         ),
       ),
     );
   }
+}
+
+class ThirdScreen extends StatelessWidget {
+  List<GDPData> _chartData = [
+    GDPData('Oceania', 1600, Color(0x410F57)),
+    GDPData('Africa', 2490, Color(0xF8F7E3)),
+    GDPData('S. America', 2900, Color(0x027333)),
+    GDPData('Europe', 23050, Color(0x82BF45)),
+    GDPData('N. America', 24880, Color(0xF2CD32)),
+    GDPData('Asia', 34390, Color(0xE74236))
+  ];
+
+  TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Syncfusion Flutter chart'),
+        ),
+        body: Center(
+            child: Container(
+                child: SfCircularChart(
+                    title: ChartTitle(
+                        text:
+                            'Continent wise GDP - 2021 \n (in billions of USD)'),
+                    legend: Legend(
+                        isVisible: true,
+                        overflowMode: LegendItemOverflowMode.wrap),
+                    tooltipBehavior: _tooltipBehavior,
+                    series: <CircularSeries>[
+              RadialBarSeries<GDPData, String>(
+                  dataSource: _chartData,
+                  pointColorMapper: (GDPData data, _) => data.pointColor,
+                  xValueMapper: (GDPData data, _) => data.continent,
+                  yValueMapper: (GDPData data, _) => data.gdp,
+                  dataLabelSettings: DataLabelSettings(isVisible: true),
+                  enableTooltip: true,
+                  maximumValue: 40000,
+                  cornerStyle: CornerStyle.bothCurve)
+            ]))));
+  }
+}
+
+class GDPData {
+  GDPData(this.continent, this.gdp, this.pointColor);
+  final String continent;
+  final int gdp;
+  final Color pointColor;
 }
