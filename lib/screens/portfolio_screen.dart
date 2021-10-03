@@ -13,19 +13,19 @@ class SecondScreen extends StatefulWidget {
 
 class SecondScreenState extends State<SecondScreen> {
   List<GDPData> _chartData = [
-    GDPData('Environmental', 78, Color(0x410F57)),
-    GDPData('Governmental', 50, Color(0x027333)),
-    GDPData('Social', 62, Color(0xF2CD32)),
-    GDPData('Total', 63, Color(0xE74236))
+    GDPData('Governmental', 0, Color(0x027333)),
+    GDPData('Social', 0, Color(0xF2CD32)),
+    GDPData('Environmental', 0, Color(0x410F57)),
+    GDPData('Total', 0, Color(0xE74236)),
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
 
   String predictionMessage = 'No Prediction';
-  String ticker = "AAPL";
+  var tickers = ["AAPL", "GOOGL", "MSFT", "AMZN"];
 
   Future<Map<String, dynamic>> postRequest(
-      String uri, Map<String, dynamic> payload) async {
-    var url = Uri.http(uri, "");
+      String path, Map<String, dynamic> payload) async {
+    var url = Uri.http("user:pass@localhost:5000", path);
     // final response = await http.get(url);
     final response = await http.post(
       url,
@@ -73,22 +73,33 @@ class SecondScreenState extends State<SecondScreen> {
             TextButton(
               onPressed: () async {
                 final jsonResponse = await postRequest(
-                    "user:pass@localhost:5000",
-                    <String, String>{"tag": ticker});
+                    "/portfolio_stats",
+                    <String, dynamic>{"tags": tickers});
                 setState(() {
                   _chartData = <GDPData>[];
-                  int e = jsonResponse['environmentalScore'];
-                  int s = jsonResponse['socialScore'];
-                  int g = jsonResponse['governanceScore'];
+                  int e = jsonResponse['environmentalScore'].round();
+                  int s = jsonResponse['socialScore'].round();
+                  int g = jsonResponse['governanceScore'].round();
                   int average = jsonResponse['prediction'].round();
-                  _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
                   _chartData.add(GDPData('Governmental', g, Color(0x027333)));
                   _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+                  _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
                   _chartData.add(GDPData('Total', average, Color(0xE74236)));
                 });
               },
               child: const Text('Get Wheel Data'),
             ),
+            /*
+            TextField(
+                onChanged: (text) {
+                    print('First text field: $text');
+                },
+                decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: 'Enter a search term',
+                ),
+            ),
+            */
           ],
         ));
   }
