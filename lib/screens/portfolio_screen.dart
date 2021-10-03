@@ -84,9 +84,17 @@ class _SecondScreenState extends State<SecondScreen> {
                         enableRealData = isOn;
                         print(isOn);
                         isOn = !isOn;
+
+                        postRequest("/set_real",
+                            <String, bool>{"useReal": enableRealData});
+                        updateWheel(userInfoProvider.userPortfolio.tickers);
                       });
                     },
                     activeColor: EquiTreeColors.brownish,
+                  ),
+                  const Text(
+                    "Predicted Data",
+                    style: TextStyle(fontSize: 24),
                   ),
                 ],
               ),
@@ -103,6 +111,10 @@ class _SecondScreenState extends State<SecondScreen> {
                         enableOverview = isOn;
                         print(isOn);
                         isOn = !isOn;
+
+                        postRequest("/set_real",
+                            <String, bool>{"useReal": enableRealData});
+                        updateWheel(userInfoProvider.userPortfolio.tickers);
                       });
                     },
                     activeColor: EquiTreeColors.brownish,
