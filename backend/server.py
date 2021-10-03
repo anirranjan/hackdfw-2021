@@ -26,7 +26,7 @@ def index():
         future_esg = reuters[tag]["esgScore"]["TR.TRESG"]["score"] * (1 + prediction / 2) if tag in reuters.keys() else f"We're still gathering data on {tag}. Check back later!"
         
         return jsonify({
-            "prediction": future_esg
+            "prediction": round(future_esg, 2)
         })
 
 if __name__ == "__main__":
