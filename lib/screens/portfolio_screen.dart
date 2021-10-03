@@ -51,7 +51,7 @@ class SecondScreenState extends State<SecondScreen> {
                     tooltipBehavior: _tooltipBehavior,
                     annotations: <CircularChartAnnotation>[
                       CircularChartAnnotation(
-                        widget: Text(_chartData[3].gdp.toString(),
+                        widget: Text("ESG: " + _chartData[3].gdp.toString(),
                             style: const TextStyle(
                                 fontSize: 36, fontWeight: FontWeight.normal)),
                         radius: '0%',

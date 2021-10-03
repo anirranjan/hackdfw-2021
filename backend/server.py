@@ -1,4 +1,6 @@
 import json
+import yfinance as yf
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -53,13 +55,22 @@ def get_scores(tag):
     }
 
 # Route to get company data for stock viewer page
-@app.route('/company', methods = ['GET'])
+@app.route('/company', methods = ['POST'])
 def getCompany():
-    return jsonify({
-        'companyName': 'Apple',
-        'ticker': 'AAPL',
-        'companyType': 'Tech'
-    })
+    request_data = json.loads(request.data.decode('utf-8'))
+    tag = str(request_data["tag"])
+
+    tinfo = yf.Ticker(tag).info
+
+    x = {
+        'companyName': tinfo["longName"],
+        'ticker': tag,
+        'companyType': tinfo["industry"]
+    }
+
+    x.update(get_scores(tag))
+
+    return jsonify(x)
 
 if __name__ == "__main__":
     app.run(debug = True)
