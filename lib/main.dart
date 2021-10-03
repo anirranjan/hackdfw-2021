@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,7 +16,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'HackDFW Submission',
-      theme: new ThemeData(scaffoldBackgroundColor: const Color(0xffF8F7E3), appBarTheme: AppBarTheme(color: const Color(0xff382E31))),
+      theme: new ThemeData(
+          scaffoldBackgroundColor: const Color(0xffF8F7E3),
+          appBarTheme: AppBarTheme(color: const Color(0xff382E31)),
+          textTheme: Theme.of(context).textTheme.apply( bodyColor: Color(0xff382E31), displayColor: Color(0xff382E31),)
+      ),
       home: HomePage(),
       debugShowCheckedModeBanner: false
     );
@@ -31,31 +33,38 @@ class HomePage extends StatefulWidget {
 }
 
 class FirstScreen extends State<HomePage> {
-  List<GDPData> _chartData = [
-    GDPData('Environmental', 78, Color(0x410F57)),
-    GDPData('Governmental', 50, Color(0x027333)),
-    GDPData('Social', 62, Color(0xF2CD32)),
-    GDPData('Average', 63, Color(0xE74236))
-  ];
-  TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
+  var random = new Random();
+
+  List<GDPData> _chartData = [];
+
+  @override
+  void initState() {
+    _chartData = [
+      GDPData('Environmental', randInt(30, 100), Color(0x410F57)),
+      GDPData('Governmental', randInt(30, 100), Color(0x027333)),
+      GDPData('Social', randInt(30, 100), Color(0xF2CD32)),
+      GDPData('Average', randInt(30, 100), Color(0xE74236))
+    ];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('TITLE', style: TextStyle(color: Color(0xffF8F7E3))),
+        title: Image.asset('assets/equitree-beige.png', height: 75),
         actions: [
-          FlatButton(
-              textColor: Color(0xffF8F7E3),
-              onPressed: () {},
-              child: Text('About ESG')
+          TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => AboutScreen()));
+              },
+              child: Text('About ESG', style: TextStyle(color: Color(0xffF8F7E3)))
           ),
-          FlatButton(
-            textColor: Color(0xffF8F7E3),
+          TextButton(
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => SecondScreen()));
             },
-            child: Text('Portfolio Evaluator')
+            child: Text('Portfolio Evaluator', style: TextStyle(color: Color(0xffF8F7E3)))
           ),
         ]
       ),
@@ -67,14 +76,14 @@ class FirstScreen extends State<HomePage> {
             height: 600,
             width: 600,
             child: SfCircularChart(
-                annotations: <CircularChartAnnotation>[
-                  CircularChartAnnotation(
-                      widget: Container(
-                          child: Text(_chartData[3].gdp.toString(), style: TextStyle(fontSize: 36, fontWeight: FontWeight.normal))
-                      ),
-                      radius: '0%',
-                  )
-                ],
+                // annotations: <CircularChartAnnotation>[
+                //   CircularChartAnnotation(
+                //       widget: Container(
+                //           child: Text(_chartData[3].gdp.toString(), style: TextStyle(fontSize: 36, fontWeight: FontWeight.normal))
+                //       ),
+                //       radius: '0%',
+                //   )
+                // ],
                 series: <CircularSeries>[
                   RadialBarSeries<GDPData, String>(
                       dataSource: _chartData,
@@ -92,6 +101,7 @@ class FirstScreen extends State<HomePage> {
             children: [
               Text('Environmental.\nSocial.\nGovernance.',
                     style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
+              SizedBox(height: 15),
               Text('Make your portfolio the\nchange you want to see in\nthe world.',
                   style: TextStyle(fontSize: 36, fontWeight: FontWeight.normal))
             ]
@@ -105,6 +115,10 @@ class FirstScreen extends State<HomePage> {
       //     },
       //     label: const Text('Go to Graph Page')),
     );
+  }
+
+  int randInt(int min, int max) {
+    return min + random.nextInt(max - min);
   }
 }
 
@@ -126,14 +140,7 @@ class SecondScreenState extends State<SecondScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('TITLE'),
-            actions: [
-              FlatButton(
-                  textColor: Colors.white,
-                  onPressed: () {},
-                  child: Text('About ESG')
-              )
-            ]
+            title: Image.asset('assets/equitree-beige.png', height: 75)
         ),
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -187,6 +194,41 @@ class SecondScreenState extends State<SecondScreen> {
             )
           ],
         )
+    );
+  }
+}
+
+class AboutScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          title: Image.asset('assets/equitree-beige.png', height: 75)
+      ),
+      body: Row (
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [ Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text('What is an ESG Score?',
+                  style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
+              SizedBox(height: 25),
+              Text('An ESG score is a numerical judgement of a company\'s policies and\n'
+                  'actions regarding three criteria: Environmental, Social, and Corporate\n'
+                  'Governance. The better their practices and impact in the present, the\n'
+                  'higher the score. Each criteria is rated individually, and a total score\n'
+                  'is calculated from those three. The score not only reflects the values\n'
+                  'of the company, but also its adaptability for the future. For example,\n'
+                  'scoring high on Environmental means your company wouldn\'t be\n'
+                  'harmed by more stringent regulations being placed on them in the future.',
+                  style: TextStyle(fontSize: 36, fontWeight: FontWeight.normal))
+            ]
+          ),
+          SizedBox(width: 250)
+        ]
+      )
     );
   }
 }
