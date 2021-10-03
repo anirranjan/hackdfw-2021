@@ -76,6 +76,7 @@ class _SecondScreenState extends State<SecondScreen> {
                     onChanged: (bool isOn) {
                       setState(() {
                         enableOverview = isOn;
+                        print(isOn);
                         isOn = !isOn;
                       });
                     },
@@ -88,7 +89,7 @@ class _SecondScreenState extends State<SecondScreen> {
                     width: 300,
                     child: TextField(
                       onChanged: (text) {
-                        newTicker = text;
+                        newTicker = text.toUpperCase();
                       },
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -112,6 +113,7 @@ class _SecondScreenState extends State<SecondScreen> {
                   height: 200,
                   child: ListView.builder(
                       padding: const EdgeInsets.all(8),
+                      shrinkWrap: true,
                       itemCount: userInfoProvider.userPortfolio.tickers.length,
                       itemBuilder: (BuildContext context, int index) {
                         return Container(

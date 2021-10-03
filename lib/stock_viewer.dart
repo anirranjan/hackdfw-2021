@@ -26,7 +26,7 @@ Future<Map<String, dynamic>> postRequest(
 
 class _StockViewerState extends State<StockViewer> {
   String company = 'No Data';
-  String ticker = "";
+  String ticker = "AAPL";
   String companyType = 'No Data';
 
   List<GDPData> _chartData = [
@@ -39,8 +39,6 @@ class _StockViewerState extends State<StockViewer> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Spacer(),
         SizedBox(
