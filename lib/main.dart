@@ -153,6 +153,17 @@ class SecondScreenState extends State<SecondScreen> {
 
   String predictionMessage = 'No Prediction';
 
+  Future<Map<String, dynamic>> PostRequest(String uri, Map<String, dynamic> payload) async {
+      var url = Uri.http(uri, "");
+      // final response = await http.get(url);
+      final response = await http.post(
+        url,
+        body: jsonEncode(payload),
+      );
+
+      return convert.jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,7 +218,7 @@ class SecondScreenState extends State<SecondScreen> {
                   _chartData.add(GDPData('Average', average, Color(0xE74236)));
                 });
               },
-              child: Text('Get Data'),
+              child: Text('Get Wheel Data'),
             ),
             Text(predictionMessage,
                 textAlign: TextAlign.center,
@@ -217,22 +228,12 @@ class SecondScreenState extends State<SecondScreen> {
                 )),
             TextButton(
               onPressed: () async {
-                var url = Uri.http("user:pass@localhost:5000", "");
-                // final response = await http.get(url);
-                final response = await http.post(
-                  url,
-                  body: jsonEncode(<String, String>{
-                    "tag": "AAPL",
-                  }),
-                );
-                var jsonResponse =
-                    convert.jsonDecode(response.body) as Map<String, dynamic>;
+                var jsonResponse = await PostRequest("user:pass@localhost:5000", <String, String>{"tag": "AAPL"});
                 setState(() {
-                  predictionMessage =
-                      "Prediction: " + jsonResponse['prediction'].toString();
+                  predictionMessage = "Prediction: " + jsonResponse['prediction'].toString();
                 });
               },
-              child: Text('Get Data'),
+              child: Text('Get Prediction Data'),
             ),
           ],
         ));
