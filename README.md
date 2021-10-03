@@ -1,4 +1,4 @@
-# hackdfw_app
+# equiTree
 
 A new Flutter project.
 
