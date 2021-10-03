@@ -6,7 +6,7 @@ import 'package:hackdfw_app/models/gdp_data.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class StockViewer extends StatefulWidget {
-  const StockViewer({Key? key}) : super(key: key);
+  const StockViewer(String ticker, {Key? key}) : super(key: key);
 
   @override
   _StockViewerState createState() => _StockViewerState();

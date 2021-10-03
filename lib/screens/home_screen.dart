@@ -52,13 +52,6 @@ class FirstScreen extends State<HomePage> {
                 },
                 child: Text('Portfolio Evaluator',
                     style: TextStyle(color: Color(0xffF8F7E3)))),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => StockViewer()));
-                },
-                child: Text('Stock Viewer',
-                    style: TextStyle(color: Color(0xffF8F7E3)))),
           ]),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.center,

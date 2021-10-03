@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hackdfw_app/colors.dart';
 import 'package:hackdfw_app/models/gdp_data.dart';
 import 'package:hackdfw_app/providers/userinfo_provider.dart';
+import 'package:hackdfw_app/stock_viewer.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
@@ -122,32 +123,35 @@ class _SecondScreenState extends State<SecondScreen> {
                       })),
               const Spacer()
             ]),
-            SizedBox(
-                width: 600,
-                height: 600,
-                child: SfCircularChart(
-                    tooltipBehavior: _tooltipBehavior,
-                    annotations: <CircularChartAnnotation>[
-                      CircularChartAnnotation(
-                        widget: Text("ESG: " + _chartData[3].gdp.toString(),
-                            style: const TextStyle(
-                                fontSize: 36, fontWeight: FontWeight.normal)),
-                        radius: '0%',
-                      )
-                    ],
-                    series: <CircularSeries>[
-                      RadialBarSeries<GDPData, String>(
-                          dataSource: _chartData,
-                          pointColorMapper: (GDPData data, _) =>
-                              data.pointColor,
-                          xValueMapper: (GDPData data, _) => data.continent,
-                          yValueMapper: (GDPData data, _) => data.gdp,
-                          dataLabelSettings:
-                              const DataLabelSettings(isVisible: true),
-                          enableTooltip: true,
-                          maximumValue: 100,
-                          cornerStyle: CornerStyle.bothCurve)
-                    ])),
+            enableOverview
+                ? SizedBox(
+                    width: 600,
+                    height: 600,
+                    child: SfCircularChart(
+                        tooltipBehavior: _tooltipBehavior,
+                        annotations: <CircularChartAnnotation>[
+                          CircularChartAnnotation(
+                            widget: Text("ESG: " + _chartData[3].gdp.toString(),
+                                style: const TextStyle(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.normal)),
+                            radius: '0%',
+                          )
+                        ],
+                        series: <CircularSeries>[
+                          RadialBarSeries<GDPData, String>(
+                              dataSource: _chartData,
+                              pointColorMapper: (GDPData data, _) =>
+                                  data.pointColor,
+                              xValueMapper: (GDPData data, _) => data.continent,
+                              yValueMapper: (GDPData data, _) => data.gdp,
+                              dataLabelSettings:
+                                  const DataLabelSettings(isVisible: true),
+                              enableTooltip: true,
+                              maximumValue: 100,
+                              cornerStyle: CornerStyle.bothCurve)
+                        ]))
+                : StockViewer(userInfoProvider.userPortfolio.tickers[0]),
           ],
         ));
   }
