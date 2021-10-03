@@ -52,7 +52,7 @@ class FirstScreen extends State<HomePage> {
       GDPData('Environmental', randInt(30, 100), Color(0x410F57)),
       GDPData('Governmental', randInt(30, 100), Color(0x027333)),
       GDPData('Social', randInt(30, 100), Color(0xF2CD32)),
-      GDPData('Average', randInt(30, 100), Color(0xE74236))
+      GDPData('Total', randInt(30, 100), Color(0xE74236))
     ];
     super.initState();
   }
@@ -151,11 +151,12 @@ class SecondScreenState extends State<SecondScreen> {
     GDPData('Environmental', 78, Color(0x410F57)),
     GDPData('Governmental', 50, Color(0x027333)),
     GDPData('Social', 62, Color(0xF2CD32)),
-    GDPData('Average', 63, Color(0xE74236))
+    GDPData('Total', 63, Color(0xE74236))
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
 
   String predictionMessage = 'No Prediction';
+  String ticker = "AAPL";
 
   Future<Map<String, dynamic>> postRequest(
       String uri, Map<String, dynamic> payload) async {
@@ -201,45 +202,27 @@ class SecondScreenState extends State<SecondScreen> {
                           dataLabelSettings:
                               const DataLabelSettings(isVisible: true),
                           enableTooltip: true,
-                          maximumValue: 2500,
+                          maximumValue: 100,
                           cornerStyle: CornerStyle.bothCurve)
                     ])),
             TextButton(
               onPressed: () async {
-                var url = Uri.http("user:pass@localhost:5000", "");
-                final response = await http.get(url);
-                var jsonResponse =
-                    convert.jsonDecode(response.body) as Map<String, dynamic>;
+                final jsonResponse = await postRequest(
+                    "user:pass@localhost:5000",
+                    <String, String>{"tag": ticker});
                 setState(() {
                   _chartData = <GDPData>[];
                   int e = jsonResponse['environmentalScore'];
                   int s = jsonResponse['socialScore'];
                   int g = jsonResponse['governanceScore'];
-                  int average = ((e + s + g) / 3).floor();
+                  int average = jsonResponse['prediction'].round();
                   _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
                   _chartData.add(GDPData('Governmental', g, Color(0x027333)));
                   _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
-                  _chartData.add(GDPData('Average', average, Color(0xE74236)));
+                  _chartData.add(GDPData('Total', average, Color(0xE74236)));
                 });
               },
               child: const Text('Get Wheel Data'),
-            ),
-            Text(predictionMessage,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                )),
-            TextButton(
-              onPressed: () async {
-                var jsonResponse = await postRequest("user:pass@localhost:5000",
-                    <String, String>{"tag": "AAPL"});
-                setState(() {
-                  predictionMessage =
-                      "Prediction: " + jsonResponse['prediction'].toString();
-                });
-              },
-              child: const Text('Get Prediction Data'),
             ),
           ],
         ));
