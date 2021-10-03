@@ -36,6 +36,8 @@ class SecondScreenState extends State<SecondScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var userInfoProvider = Provider.of<UserInfoProvider>(context);
+
     return Scaffold(
         appBar:
             AppBar(title: Image.asset('assets/equitree-beige.png', height: 75)),
@@ -73,7 +75,7 @@ class SecondScreenState extends State<SecondScreen> {
               onPressed: () async {
                 final jsonResponse = await postRequest(
                     "/portfolio_stats", <String, dynamic>{
-                  "tags": context.read<UserInfoProvider>().userPortfolio
+                  "tags": userInfoProvider.userPortfolio.tickers
                 });
                 setState(() {
                   _chartData = <GDPData>[];
