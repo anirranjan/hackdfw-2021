@@ -72,7 +72,7 @@ class _SecondScreenState extends State<SecondScreen> {
               const Spacer(),
               Row(
                 children: [
-                  const Text("Profile Overview"),
+                  const Text("Profile Overview", style: TextStyle(fontSize: 24),),
                   Switch(
                     value: enableOverview,
                     onChanged: (bool isOn) {
@@ -82,16 +82,17 @@ class _SecondScreenState extends State<SecondScreen> {
                         isOn = !isOn;
                       });
                     },
-                    activeColor: Colors.blue,
+                    activeColor: EquiTreeColors.brownish,
                   ),
                 ],
               ),
               Row(children: [
-                SizedBox(
+                Container(
                     width: 300,
                     child: DropdownSearch<String>.multiSelection(
                         mode: Mode.MENU,
                         showSelectedItems: true,
+                        showSearchBox: true,
                         items: stocks,
                         label: "Portfolio stocks",
                         hint: "Add a stock...",
@@ -102,9 +103,10 @@ class _SecondScreenState extends State<SecondScreen> {
                         selectedItems: []),
                 ),
               ]),
-              SizedBox(
+              SizedBox(height: 20),
+              Container(
                   width: 500,
-                  height: 200,
+                  height: 400,
                   child: ListView.builder(
                       padding: const EdgeInsets.all(8),
                       shrinkWrap: true,
