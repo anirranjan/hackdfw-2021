@@ -12,6 +12,6 @@ class UserInfoProvider with ChangeNotifier {
 
 class Porfolio {
   final String user;
-  final List<String> tickers;
+  List<String> tickers;
   Porfolio(this.user, this.tickers);
 }

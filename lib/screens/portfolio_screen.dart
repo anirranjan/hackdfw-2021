@@ -6,6 +6,8 @@ import 'package:hackdfw_app/stock_viewer.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
+import 'package:dropdown_search/dropdown_search.dart';
+import 'package:hackdfw_app/supportstock.dart';
 import 'dart:convert' as convert;
 
 class SecondScreen extends StatefulWidget {
@@ -87,26 +89,18 @@ class _SecondScreenState extends State<SecondScreen> {
               Row(children: [
                 SizedBox(
                     width: 300,
-                    child: TextField(
-                      onChanged: (text) {
-                        newTicker = text.toUpperCase();
-                      },
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Add a ticker to your portfolio',
-                      ),
-                    )),
-                TextButton(
-                  onPressed: () {
-                    if (newTicker != "" &&
-                        !userInfoProvider.userPortfolio.tickers
-                            .contains(newTicker)) {
-                      userInfoProvider.userPortfolio.tickers.add(newTicker);
-                      updateWheel(userInfoProvider.userPortfolio.tickers);
-                    }
-                  },
-                  child: const Text("+"),
-                )
+                    child: DropdownSearch<String>.multiSelection(
+                        mode: Mode.MENU,
+                        showSelectedItems: true,
+                        items: stocks,
+                        label: "Portfolio stocks",
+                        hint: "Add a stock...",
+                        onChange: (List<String> selected) {
+                          userInfoProvider.userPortfolio.tickers = selected;
+                          updateWheel(selected);
+                        },
+                        selectedItems: []),
+                ),
               ]),
               SizedBox(
                   width: 500,
