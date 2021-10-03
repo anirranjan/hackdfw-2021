@@ -1,5 +1,4 @@
 List<String> stocks = [
-  "KEYS",
   "CRH",
   "HSX",
   "RI",
