@@ -67,24 +67,15 @@ class FirstScreen extends State<HomePage> {
           SizedBox(
               height: 600,
               width: 600,
-              child: SfCircularChart(
-                  // annotations: <CircularChartAnnotation>[
-                  //   CircularChartAnnotation(
-                  //       widget: Container(
-                  //           child: Text(_chartData[3].gdp.toString(), style: TextStyle(fontSize: 36, fontWeight: FontWeight.normal))
-                  //       ),
-                  //       radius: '0%',
-                  //   )
-                  // ],
-                  series: <CircularSeries>[
-                    RadialBarSeries<GDPData, String>(
-                        dataSource: _chartData,
-                        pointColorMapper: (GDPData data, _) => data.pointColor,
-                        xValueMapper: (GDPData data, _) => data.continent,
-                        yValueMapper: (GDPData data, _) => data.gdp,
-                        maximumValue: 100,
-                        cornerStyle: CornerStyle.bothCurve)
-                  ])),
+              child: SfCircularChart(series: <CircularSeries>[
+                RadialBarSeries<GDPData, String>(
+                    dataSource: _chartData,
+                    pointColorMapper: (GDPData data, _) => data.pointColor,
+                    xValueMapper: (GDPData data, _) => data.continent,
+                    yValueMapper: (GDPData data, _) => data.gdp,
+                    maximumValue: 100,
+                    cornerStyle: CornerStyle.bothCurve)
+              ])),
           Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,12 +91,6 @@ class FirstScreen extends State<HomePage> {
               ])
         ],
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //     onPressed: () {
-      //       Navigator.push(context,
-      //           MaterialPageRoute(builder: (context) => SecondScreen()));
-      //     },
-      //     label: const Text('Go to Graph Page')),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hackdfw_app/colors.dart';
 import 'package:hackdfw_app/models/gdp_data.dart';
 import 'package:hackdfw_app/providers/userinfo_provider.dart';
 import 'package:provider/provider.dart';
@@ -10,10 +11,10 @@ class SecondScreen extends StatefulWidget {
   const SecondScreen({Key? key}) : super(key: key);
 
   @override
-  SecondScreenState createState() => SecondScreenState();
+  _SecondScreenState createState() => _SecondScreenState();
 }
 
-class SecondScreenState extends State<SecondScreen> {
+class _SecondScreenState extends State<SecondScreen> {
   List<GDPData> _chartData = [
     GDPData('Governmental', 0, Color(0x027333)),
     GDPData('Social', 0, Color(0xF2CD32)),
@@ -21,6 +22,7 @@ class SecondScreenState extends State<SecondScreen> {
     GDPData('Total', 0, Color(0xE74236)),
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
+  var enableOverview = true;
 
   String predictionMessage = 'No Prediction';
   String newTicker = "";
@@ -45,10 +47,10 @@ class SecondScreenState extends State<SecondScreen> {
       int s = jsonResponse['socialScore'].round();
       int g = jsonResponse['governanceScore'].round();
       int average = jsonResponse['prediction'].round();
-      _chartData.add(GDPData('Governmental', g, Color(0x027333)));
-      _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
-      _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
-      _chartData.add(GDPData('Total', average, Color(0xE74236)));
+      _chartData.add(GDPData('Governmental', g, EquiTreeColors.orangeish));
+      _chartData.add(GDPData('Social', s, EquiTreeColors.purpleish));
+      _chartData.add(GDPData('Environmental', e, EquiTreeColors.yellowish));
+      _chartData.add(GDPData('Total', average, EquiTreeColors.greenish));
     });
   }
 
@@ -65,6 +67,21 @@ class SecondScreenState extends State<SecondScreen> {
           children: [
             Column(children: <Widget>[
               const Spacer(),
+              Row(
+                children: [
+                  const Text("Profile Overview"),
+                  Switch(
+                    value: enableOverview,
+                    onChanged: (bool isOn) {
+                      setState(() {
+                        enableOverview = isOn;
+                        isOn = !isOn;
+                      });
+                    },
+                    activeColor: Colors.blue,
+                  ),
+                ],
+              ),
               Row(children: [
                 SizedBox(
                     width: 300,

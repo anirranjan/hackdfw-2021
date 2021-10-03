@@ -38,18 +38,14 @@ class _StockViewerState extends State<StockViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Stock Viewer'),
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-            Spacer(),
-          SizedBox(
-          width: 400,
-          child: TextField(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Spacer(),
+        SizedBox(
+            width: 400,
+            child: TextField(
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Input Ticker',
@@ -57,72 +53,70 @@ class _StockViewerState extends State<StockViewer> {
               onChanged: (text) {
                 ticker = text;
               },
-          )),
-          Text("Name: " + company,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              )),
-          Text("Industry: " + companyType,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              )),
-          TextButton(
-            onPressed: () async {
-                if(ticker != ""){
-                    var url = Uri.http("user:pass@localhost:5000", "/company");
-                    final jsonResponse = await postRequest("/company", <String, String>{"tag": ticker});
-                    setState(() {
-                      company = jsonResponse['companyName'];
-                      ticker = jsonResponse['ticker'];
-                      companyType = jsonResponse['companyType'];
+            )),
+        Text("Name: " + company,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            )),
+        Text("Industry: " + companyType,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            )),
+        TextButton(
+          onPressed: () async {
+            if (ticker != "") {
+              var url = Uri.http("user:pass@localhost:5000", "/company");
+              final jsonResponse = await postRequest(
+                  "/company", <String, String>{"tag": ticker});
+              setState(() {
+                company = jsonResponse['companyName'];
+                ticker = jsonResponse['ticker'];
+                companyType = jsonResponse['companyType'];
 
-                      _chartData = <GDPData>[];
-                      int e = jsonResponse['environmentalScore'].round();
-                      int s = jsonResponse['socialScore'].round();
-                      int g = jsonResponse['governanceScore'].round();
-                      int average = jsonResponse['prediction'].round();
-                      _chartData.add(GDPData('Governmental', g, Color(0x027333)));
-                      _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
-                      _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
-                      _chartData.add(GDPData('Total', average, Color(0xE74236)));
-                    });
-                }
-
-            },
-            child: const Text('Get Company Data'),
-          ),
-              SizedBox(
-                  height: 600,
-                  width: 600,
-                  child: SfCircularChart(
-                      tooltipBehavior: TooltipBehavior(enable: true),
-                      annotations: <CircularChartAnnotation>[
-                        CircularChartAnnotation(
-                          widget: Text("ESG: " + _chartData[3].gdp.toString(),
-                              style: const TextStyle(
-                                  fontSize: 36, fontWeight: FontWeight.normal)),
-                          radius: '0%',
-                        )
-                      ],
-                      series: <CircularSeries>[
-                        RadialBarSeries<GDPData, String>(
-                            dataSource: _chartData,
-                            pointColorMapper: (GDPData data, _) =>
-                                data.pointColor,
-                            xValueMapper: (GDPData data, _) => data.continent,
-                            yValueMapper: (GDPData data, _) => data.gdp,
-                            dataLabelSettings:
-                                const DataLabelSettings(isVisible: true),
-                            enableTooltip: true,
-                            maximumValue: 100,
-                            cornerStyle: CornerStyle.bothCurve)
-                  ])),
-        ],
-      ),
+                _chartData = <GDPData>[];
+                int e = jsonResponse['environmentalScore'].round();
+                int s = jsonResponse['socialScore'].round();
+                int g = jsonResponse['governanceScore'].round();
+                int average = jsonResponse['prediction'].round();
+                _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+                _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+                _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+                _chartData.add(GDPData('Total', average, Color(0xE74236)));
+              });
+            }
+          },
+          child: const Text('Get Company Data'),
+        ),
+        SizedBox(
+            height: 600,
+            width: 600,
+            child: SfCircularChart(
+                tooltipBehavior: TooltipBehavior(enable: true),
+                annotations: <CircularChartAnnotation>[
+                  CircularChartAnnotation(
+                    widget: Text("ESG: " + _chartData[3].gdp.toString(),
+                        style: const TextStyle(
+                            fontSize: 36, fontWeight: FontWeight.normal)),
+                    radius: '0%',
+                  )
+                ],
+                series: <CircularSeries>[
+                  RadialBarSeries<GDPData, String>(
+                      dataSource: _chartData,
+                      pointColorMapper: (GDPData data, _) => data.pointColor,
+                      xValueMapper: (GDPData data, _) => data.continent,
+                      yValueMapper: (GDPData data, _) => data.gdp,
+                      dataLabelSettings:
+                          const DataLabelSettings(isVisible: true),
+                      enableTooltip: true,
+                      maximumValue: 100,
+                      cornerStyle: CornerStyle.bothCurve)
+                ])),
+      ],
     );
   }
 }
