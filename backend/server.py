@@ -21,14 +21,36 @@ def index():
     else:
         request_data = json.loads(request.data.decode('utf-8'))
         tag = str(request_data["tag"])
-        
-        prediction = model.predict(dict[tag])[0][0]
-        future_esg = reuters[tag]["esgScore"]["TR.TRESG"]["score"] * (1 + prediction / 2) if tag in reuters.keys() else f"We're still gathering data on {tag}. Check back later!"
-        
-        return jsonify({
-            "prediction": round(future_esg, 2),
-            "delta": future_esg - reuters[tag]["esgScore"]["TR.TRESG"]["score"]
-        })
+        return jsonify(get_scores(tag))
+
+@app.route("/portfolio_stats", methods=["POST"])
+def portfolio_stats():
+    request_data = json.loads(request.data.decode('utf-8'))
+    tags = [str(s) for s in request_data["tags"]]
+    return jsonify(get_portfolio_average(tags))
+
+def get_portfolio_average(tags):
+    out = {"prediction": 0, "environmentalScore": 0, "socialScore": 0, "governanceScore": 0, "delta": 0}
+    for tag in tags:
+        for k, v in get_scores(tag).items():
+            out[k] += v
+    out = {k: int(v / len(out)) for k, v in out.items()}
+    return out
+
+def get_scores(tag):
+    prediction = model.predict(dict[tag])[0][0]
+    future_esg = reuters[tag]["esgScore"]["TR.TRESG"]["score"] * (1 + prediction / 2) if tag in reuters.keys() else f"We're still gathering data on {tag}. Check back later!"
+
+    escore, sscore, gscore = reuters[tag]["esgScore"]["TR.EnvironmentPillar"]["score"], reuters[tag]["esgScore"]["TR.SocialPillar"]["score"], reuters[tag]["esgScore"]["TR.GovernancePillar"]["score"]
+    escore, sscore, gscore = (escore * (1 + prediction / 2)), (sscore * (1 + prediction / 2)), (gscore * (1 + prediction / 2))
+
+    return {
+        "prediction": round(future_esg, 2),
+        "environmentalScore": escore,
+        "socialScore": sscore,
+        "governanceScore": gscore,
+        "delta": future_esg - reuters[tag]["esgScore"]["TR.TRESG"]["score"]
+    }
 
 # Route to get company data for stock viewer page
 @app.route('/company', methods = ['GET'])
