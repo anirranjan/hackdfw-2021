@@ -116,12 +116,9 @@ class _SecondScreenState extends State<SecondScreen> {
                       shrinkWrap: true,
                       itemCount: userInfoProvider.userPortfolio.tickers.length,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            height: 50,
-                            margin: const EdgeInsets.all(2),
-                            child: Center(
-                                child: Text(userInfoProvider
-                                    .userPortfolio.tickers[index])));
+                        return TickerButton(
+                            ticker:
+                                userInfoProvider.userPortfolio.tickers[index]);
                       })),
               const Spacer()
             ]),
@@ -157,6 +154,24 @@ class _SecondScreenState extends State<SecondScreen> {
                     ticker: userInfoProvider.userPortfolio.tickers[0],
                   ),
           ],
+        ));
+  }
+}
+
+class TickerButton extends StatelessWidget {
+  final String ticker;
+
+  const TickerButton({Key? key, required this.ticker}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 50,
+        margin: const EdgeInsets.fromLTRB(60, 5, 60, 5),
+        child: Card(
+          child: ListTile(
+            title: Text(ticker),
+          ),
         ));
   }
 }
