@@ -26,6 +26,7 @@ class _SecondScreenState extends State<SecondScreen> {
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
   var enableOverview = true;
+  var enabledReal = false;
 
   String predictionMessage = 'No Prediction';
   String newTicker = "";
@@ -78,7 +79,6 @@ class _SecondScreenState extends State<SecondScreen> {
                     onChanged: (bool isOn) {
                       setState(() {
                         enableOverview = isOn;
-                        print(isOn);
                         isOn = !isOn;
                       });
                     },
@@ -97,7 +97,7 @@ class _SecondScreenState extends State<SecondScreen> {
                         label: "Portfolio stocks",
                         hint: "Add a stock...",
                         onChange: (List<String> selected) {
-                          userInfoProvider.userPortfolio.tickers = selected;
+                          userInfoProvider.updateWheel(selected);
                           updateWheel(selected);
                         },
                         selectedItems: []),
@@ -119,14 +119,33 @@ class _SecondScreenState extends State<SecondScreen> {
               const Spacer()
             ]),
             enableOverview
-                ? SizedBox(
+                ? Column(
+                children: [
+                  Row(
+                    children: [
+                      const Text("Real:", style: TextStyle(fontSize: 24),),
+                      Switch(
+                        value: enabledReal,
+                        onChanged: (bool isOn) {
+                          setState(() {
+                            enabledReal = !enabledReal;
+
+                            postRequest("/set_real", <String, bool>{"useReal": enabledReal});
+                            updateWheel(userInfoProvider.userPortfolio.tickers);
+                          });
+                        },
+                        activeColor: EquiTreeColors.brownish,
+                      ),
+                    ],
+                  ),
+                  Container(
                     width: 600,
                     height: 600,
                     child: SfCircularChart(
                         tooltipBehavior: _tooltipBehavior,
                         annotations: <CircularChartAnnotation>[
                           CircularChartAnnotation(
-                            widget: Text("ESG: " + _chartData[3].score.toString(),
+                            widget: Text("Predicted\nESG: " + _chartData[3].score.toString(),
                                 style: const TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.normal)),
@@ -145,10 +164,29 @@ class _SecondScreenState extends State<SecondScreen> {
                               enableTooltip: true,
                               maximumValue: 100,
                               cornerStyle: CornerStyle.bothCurve)
-                        ]))
-                : StockViewer(
-                    ticker: userInfoProvider.selectedTicker,
+                        ]))])
+                : Column(
+                children: [
+                  Row(
+                    children: [
+                      const Text("Real:", style: TextStyle(fontSize: 24),),
+                      Switch(
+                        value: enabledReal,
+                        onChanged: (bool isOn) {
+                          setState(() {
+                            enabledReal = !enabledReal;
+
+                            postRequest("/set_real", <String, bool>{"useReal": enabledReal});
+                            updateWheel(userInfoProvider.userPortfolio.tickers);
+                          });
+                        },
+                        activeColor: EquiTreeColors.brownish,
+                      ),
+                    ],
                   ),
+                  StockViewer(
+                    ticker: userInfoProvider.selectedTicker,
+                  )]),
           ],
         ));
   }
@@ -169,7 +207,6 @@ class TickerButton extends StatelessWidget {
         child: GestureDetector(
             onTap: () {
               userInfoProvider.updateTicker(ticker);
-              print("test ${ticker}");
             },
             child: Card(
               child: ListTile(

@@ -86,7 +86,7 @@ class _StockViewerState extends State<StockViewer> {
                 tooltipBehavior: TooltipBehavior(enable: true),
                 annotations: <CircularChartAnnotation>[
                   CircularChartAnnotation(
-                    widget: Text("ESG: " + _chartData[3].score.toString(),
+                    widget: Text("Predicted\nESG: " + _chartData[3].score.toString(),
                         style: const TextStyle(
                             fontSize: 36, fontWeight: FontWeight.normal)),
                     radius: '0%',

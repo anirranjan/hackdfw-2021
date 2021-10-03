@@ -8,6 +8,11 @@ class UserInfoProvider with ChangeNotifier {
     selectedTicker = newTicker;
     notifyListeners();
   }
+
+  void updateWheel(tickers){
+    userPortfolio.tickers = tickers;
+    notifyListeners();
+  }
 }
 
 class Porfolio {
