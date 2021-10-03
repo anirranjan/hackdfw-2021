@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hackdfw_app/colors.dart';
-import 'package:hackdfw_app/models/gdp_data.dart';
+import 'package:hackdfw_app/models/esg_data.dart';
 import 'package:hackdfw_app/providers/userinfo_provider.dart';
 import 'package:hackdfw_app/stock_viewer.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +16,11 @@ class SecondScreen extends StatefulWidget {
 }
 
 class _SecondScreenState extends State<SecondScreen> {
-  List<GDPData> _chartData = [
-    GDPData('Governmental', 0, Color(0x027333)),
-    GDPData('Social', 0, Color(0xF2CD32)),
-    GDPData('Environmental', 0, Color(0x410F57)),
-    GDPData('Total', 0, Color(0xE74236)),
+  List<ESGData> _chartData = [
+    ESGData('Governmental', 0, Color(0x027333)),
+    ESGData('Social', 0, Color(0xF2CD32)),
+    ESGData('Environmental', 0, Color(0x410F57)),
+    ESGData('Total', 0, Color(0xE74236)),
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
   var enableOverview = true;
@@ -43,15 +43,15 @@ class _SecondScreenState extends State<SecondScreen> {
     final jsonResponse = await postRequest(
         "/portfolio_stats", <String, dynamic>{"tags": tickers});
     setState(() {
-      _chartData = <GDPData>[];
+      _chartData = <ESGData>[];
       int e = jsonResponse['environmentalScore'].round();
       int s = jsonResponse['socialScore'].round();
       int g = jsonResponse['governanceScore'].round();
       int average = jsonResponse['prediction'].round();
-      _chartData.add(GDPData('Governmental', g, EquiTreeColors.orangeish));
-      _chartData.add(GDPData('Social', s, EquiTreeColors.purpleish));
-      _chartData.add(GDPData('Environmental', e, EquiTreeColors.yellowish));
-      _chartData.add(GDPData('Total', average, EquiTreeColors.greenish));
+      _chartData.add(ESGData('Governmental', g, EquiTreeColors.orangeish));
+      _chartData.add(ESGData('Social', s, EquiTreeColors.purpleish));
+      _chartData.add(ESGData('Environmental', e, EquiTreeColors.yellowish));
+      _chartData.add(ESGData('Total', average, EquiTreeColors.greenish));
     });
   }
 
@@ -133,7 +133,7 @@ class _SecondScreenState extends State<SecondScreen> {
                         tooltipBehavior: _tooltipBehavior,
                         annotations: <CircularChartAnnotation>[
                           CircularChartAnnotation(
-                            widget: Text("ESG: " + _chartData[3].gdp.toString(),
+                            widget: Text("ESG: " + _chartData[3].score.toString(),
                                 style: const TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.normal)),
@@ -141,12 +141,12 @@ class _SecondScreenState extends State<SecondScreen> {
                           )
                         ],
                         series: <CircularSeries>[
-                          RadialBarSeries<GDPData, String>(
+                          RadialBarSeries<ESGData, String>(
                               dataSource: _chartData,
-                              pointColorMapper: (GDPData data, _) =>
+                              pointColorMapper: (ESGData data, _) =>
                                   data.pointColor,
-                              xValueMapper: (GDPData data, _) => data.continent,
-                              yValueMapper: (GDPData data, _) => data.gdp,
+                              xValueMapper: (ESGData data, _) => data.category,
+                              yValueMapper: (ESGData data, _) => data.score,
                               dataLabelSettings:
                                   const DataLabelSettings(isVisible: true),
                               enableTooltip: true,

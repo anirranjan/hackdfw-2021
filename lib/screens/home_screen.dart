@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:hackdfw_app/models/gdp_data.dart';
+import 'package:hackdfw_app/models/esg_data.dart';
 import 'package:hackdfw_app/screens/portfolio_screen.dart';
 import 'package:hackdfw_app/stock_viewer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -19,15 +19,15 @@ class FirstScreen extends State<HomePage> {
 
   var random = Random();
 
-  List<GDPData> _chartData = [];
+  List<ESGData> _chartData = [];
 
   @override
   void initState() {
     _chartData = [
-      GDPData('Environmental', randInt(30, 100), Color(0x410F57)),
-      GDPData('Governmental', randInt(30, 100), Color(0x027333)),
-      GDPData('Social', randInt(30, 100), Color(0xF2CD32)),
-      GDPData('Total', randInt(30, 100), Color(0xE74236))
+      ESGData('Environmental', randInt(30, 100), Color(0x410F57)),
+      ESGData('Governmental', randInt(30, 100), Color(0x027333)),
+      ESGData('Social', randInt(30, 100), Color(0xF2CD32)),
+      ESGData('Total', randInt(30, 100), Color(0xE74236))
     ];
     super.initState();
   }
@@ -61,11 +61,11 @@ class FirstScreen extends State<HomePage> {
               height: 600,
               width: 600,
               child: SfCircularChart(series: <CircularSeries>[
-                RadialBarSeries<GDPData, String>(
+                RadialBarSeries<ESGData, String>(
                     dataSource: _chartData,
-                    pointColorMapper: (GDPData data, _) => data.pointColor,
-                    xValueMapper: (GDPData data, _) => data.continent,
-                    yValueMapper: (GDPData data, _) => data.gdp,
+                    pointColorMapper: (ESGData data, _) => data.pointColor,
+                    xValueMapper: (ESGData data, _) => data.category,
+                    yValueMapper: (ESGData data, _) => data.score,
                     maximumValue: 100,
                     cornerStyle: CornerStyle.bothCurve)
               ])),
