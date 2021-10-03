@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'dropdown.dart';
 
 void main() {
   runApp(MyApp());
@@ -79,30 +80,9 @@ class FirstScreen extends State<HomePage> {
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => SecondScreen()));
+                MaterialPageRoute(builder: (context) => StockDropDown()));
           },
           label: const Text('Go to Graph Page')),
-    );
-  }
-}
-
-class SecondScreen extends StatelessWidget {
-  const SecondScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Graph'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: Text('Go to Home'),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
     );
   }
 }
