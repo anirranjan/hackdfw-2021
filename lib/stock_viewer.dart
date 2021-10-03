@@ -6,7 +6,8 @@ import 'package:hackdfw_app/models/gdp_data.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class StockViewer extends StatefulWidget {
-  const StockViewer(String ticker, {Key? key}) : super(key: key);
+  StockViewer({Key? key, required this.ticker}) : super(key: key);
+  String ticker;
 
   @override
   _StockViewerState createState() => _StockViewerState();
@@ -26,7 +27,7 @@ Future<Map<String, dynamic>> postRequest(
 
 class _StockViewerState extends State<StockViewer> {
   String company = 'No Data';
-  String ticker = "AAPL";
+  String ticker = "No Data";
   String companyType = 'No Data';
 
   List<GDPData> _chartData = [
@@ -61,22 +62,12 @@ class _StockViewerState extends State<StockViewer> {
 
   @override
   Widget build(BuildContext context) {
+    ticker = widget.ticker;
     updateChart();
 
     return Column(
       children: [
         Spacer(),
-        // SizedBox(
-        //     width: 400,
-        //     child: TextField(
-        //       decoration: InputDecoration(
-        //         border: OutlineInputBorder(),
-        //         labelText: 'Input Ticker',
-        //       ),
-        //       onChanged: (text) {
-        //         ticker = text;
-        //       },
-        //     )),
         Text("Name: " + company,
             textAlign: TextAlign.center,
             style: const TextStyle(

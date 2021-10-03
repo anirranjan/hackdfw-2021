@@ -153,7 +153,9 @@ class _SecondScreenState extends State<SecondScreen> {
                               maximumValue: 100,
                               cornerStyle: CornerStyle.bothCurve)
                         ]))
-                : StockViewer(userInfoProvider.userPortfolio.tickers[0]),
+                : StockViewer(
+                    ticker: userInfoProvider.userPortfolio.tickers[0],
+                  ),
           ],
         ));
   }
