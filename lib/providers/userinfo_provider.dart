@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class UserInfoProvider with ChangeNotifier {
-  Porfolio userPortfolio =
-      Porfolio("Test User", ["AAPL", "GOOGL", "MSFT", "AMZN"]);
+  Porfolio userPortfolio = Porfolio("Test User", []);
 }
 
 class Porfolio {

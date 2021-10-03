@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackdfw_app/models/gdp_data.dart';
 import 'package:hackdfw_app/providers/userinfo_provider.dart';
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -23,7 +23,6 @@ class SecondScreenState extends State<SecondScreen> {
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
 
   String predictionMessage = 'No Prediction';
-  var tickers = [];
   String newTicker = "";
 
   Future<Map<String, dynamic>> postRequest(
@@ -37,7 +36,7 @@ class SecondScreenState extends State<SecondScreen> {
     return convert.jsonDecode(response.body) as Map<String, dynamic>;
   }
 
-  void updateWheel() async {
+  void updateWheel(tickers) async {
     final jsonResponse = await postRequest(
         "/portfolio_stats", <String, dynamic>{"tags": tickers});
     setState(() {
@@ -64,6 +63,48 @@ class SecondScreenState extends State<SecondScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            Column(children: <Widget>[
+              const Spacer(),
+              Row(children: [
+                SizedBox(
+                    width: 300,
+                    child: TextField(
+                      onChanged: (text) {
+                        newTicker = text;
+                      },
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Add a ticker to your portfolio',
+                      ),
+                    )),
+                TextButton(
+                  onPressed: () {
+                    if (newTicker != "" &&
+                        !userInfoProvider.userPortfolio.tickers
+                            .contains(newTicker)) {
+                      userInfoProvider.userPortfolio.tickers.add(newTicker);
+                      updateWheel(userInfoProvider.userPortfolio.tickers);
+                    }
+                  },
+                  child: const Text("+"),
+                )
+              ]),
+              SizedBox(
+                  width: 500,
+                  height: 200,
+                  child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: userInfoProvider.userPortfolio.tickers.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                            height: 50,
+                            margin: const EdgeInsets.all(2),
+                            child: Center(
+                                child: Text(userInfoProvider
+                                    .userPortfolio.tickers[index])));
+                      })),
+              const Spacer()
+            ]),
             SizedBox(
                 width: 600,
                 height: 600,
@@ -90,56 +131,6 @@ class SecondScreenState extends State<SecondScreen> {
                           maximumValue: 100,
                           cornerStyle: CornerStyle.bothCurve)
                     ])),
-            Column(children: <Widget>[
-              Spacer(),
-              Row(children: [
-                SizedBox(
-                    width: 300,
-                    child: TextField(
-                      onChanged: (text) {
-                        newTicker = text;
-                      },
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Add a ticker to your portfolio',
-                      ),
-                    )),
-                TextButton(
-                  onPressed: () {
-                    if (newTicker != "" && !tickers.contains(newTicker)) {
-                      tickers.add(newTicker);
-                      updateWheel();
-                    }
-                  },
-                  child: const Text("+"),
-                )
-              ]),
-              SizedBox(
-                  width: 500,
-                  height: 200,
-                  child: ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: tickers.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                            height: 50,
-                            margin: EdgeInsets.all(2),
-                            child: Center(child: Text('${tickers[index]}')));
-                      })),
-              Spacer()
-            ]),
-
-            /*
-            TextField(
-                onChanged: (text) {
-                    print('First text field: $text');
-                },
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Enter a search term',
-                ),
-            ),
-            */
           ],
         ));
   }
