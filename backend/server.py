@@ -22,7 +22,7 @@ def index():
         request_data = json.loads(request.data.decode('utf-8'))
         tag = str(request_data["tag"])
         
-        prediction = model.predict(d[tag])[0][0]
+        prediction = model.predict(dict[tag])[0][0]
         future_esg = reuters[tag]["esgScore"]["TR.TRESG"]["score"] * (1 + prediction / 2) if tag in reuters.keys() else f"We're still gathering data on {tag}. Check back later!"
         
         return jsonify({
