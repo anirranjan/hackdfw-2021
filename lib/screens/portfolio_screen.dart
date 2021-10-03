@@ -151,7 +151,7 @@ class _SecondScreenState extends State<SecondScreen> {
                               cornerStyle: CornerStyle.bothCurve)
                         ]))
                 : StockViewer(
-                    ticker: userInfoProvider.userPortfolio.tickers[0],
+                    ticker: userInfoProvider.selectedTicker,
                   ),
           ],
         ));
@@ -165,13 +165,20 @@ class TickerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var userInfoProvider = Provider.of<UserInfoProvider>(context);
+
     return Container(
         height: 50,
         margin: const EdgeInsets.fromLTRB(60, 5, 60, 5),
-        child: Card(
-          child: ListTile(
-            title: Text(ticker),
-          ),
-        ));
+        child: GestureDetector(
+            onTap: () {
+              userInfoProvider.updateTicker(ticker);
+              print("test ${ticker}");
+            },
+            child: Card(
+              child: ListTile(
+                title: Text(ticker),
+              ),
+            )));
   }
 }
