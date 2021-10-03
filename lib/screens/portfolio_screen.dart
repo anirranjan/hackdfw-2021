@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackdfw_app/models/gdp_data.dart';
+import 'package:hackdfw_app/providers/userinfo_provider.dart';
+import 'package:provider/src/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -27,7 +29,6 @@ class SecondScreenState extends State<SecondScreen> {
   Future<Map<String, dynamic>> postRequest(
       String path, Map<String, dynamic> payload) async {
     var url = Uri.http("user:pass@localhost:5000", path);
-    // final response = await http.get(url);
     final response = await http.post(
       url,
       body: convert.jsonEncode(payload),
@@ -37,24 +38,25 @@ class SecondScreenState extends State<SecondScreen> {
   }
 
   void updateWheel() async {
-      final jsonResponse = await postRequest(
-          "/portfolio_stats",
-          <String, dynamic>{"tags": tickers});
-      setState(() {
-        _chartData = <GDPData>[];
-        int e = jsonResponse['environmentalScore'].round();
-        int s = jsonResponse['socialScore'].round();
-        int g = jsonResponse['governanceScore'].round();
-        int average = jsonResponse['prediction'].round();
-        _chartData.add(GDPData('Governmental', g, Color(0x027333)));
-        _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
-        _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
-        _chartData.add(GDPData('Total', average, Color(0xE74236)));
-        });
+    final jsonResponse = await postRequest(
+        "/portfolio_stats", <String, dynamic>{"tags": tickers});
+    setState(() {
+      _chartData = <GDPData>[];
+      int e = jsonResponse['environmentalScore'].round();
+      int s = jsonResponse['socialScore'].round();
+      int g = jsonResponse['governanceScore'].round();
+      int average = jsonResponse['prediction'].round();
+      _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+      _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+      _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+      _chartData.add(GDPData('Total', average, Color(0xE74236)));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var userInfoProvider = Provider.of<UserInfoProvider>(context);
+
     return Scaffold(
         appBar:
             AppBar(title: Image.asset('assets/equitree-beige.png', height: 75)),
@@ -88,53 +90,44 @@ class SecondScreenState extends State<SecondScreen> {
                           maximumValue: 100,
                           cornerStyle: CornerStyle.bothCurve)
                     ])),
-            Column(
-                children: <Widget>[
-                    Spacer(),
-                    Row(children: [
-                        SizedBox(
-                        width: 300,
-                            child: TextField(
-                                onChanged: (text) {
-                                    newTicker = text;
-                                },
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    hintText: 'Add a ticker to your portfolio',
-                                ),
-                            )
-                        ),
-                        TextButton(
-                            onPressed: () {
-                                if(newTicker != "" && !tickers.contains(newTicker)){
-                                    tickers.add(newTicker);
-                                    updateWheel();
-                                }
-                            },
-                            child: const Text("+"),
-                        )]
-                    ),
-                    SizedBox(
-                    width: 500,
-                    height: 200,
-                    child:
-                        ListView.builder(
-                            padding: const EdgeInsets.all(8),
-                            itemCount: tickers.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Container(
-                                    height: 50,
-                                    margin: EdgeInsets.all(2),
-                                    child: Center(
-                                        child: Text('${tickers[index]}')
-                                    )
-                                );
-                            }
-                        )
-                    ),
-                    Spacer()
-                ]
-            ),
+            Column(children: <Widget>[
+              Spacer(),
+              Row(children: [
+                SizedBox(
+                    width: 300,
+                    child: TextField(
+                      onChanged: (text) {
+                        newTicker = text;
+                      },
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Add a ticker to your portfolio',
+                      ),
+                    )),
+                TextButton(
+                  onPressed: () {
+                    if (newTicker != "" && !tickers.contains(newTicker)) {
+                      tickers.add(newTicker);
+                      updateWheel();
+                    }
+                  },
+                  child: const Text("+"),
+                )
+              ]),
+              SizedBox(
+                  width: 500,
+                  height: 200,
+                  child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: tickers.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                            height: 50,
+                            margin: EdgeInsets.all(2),
+                            child: Center(child: Text('${tickers[index]}')));
+                      })),
+              Spacer()
+            ]),
 
             /*
             TextField(

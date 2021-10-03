@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:hackdfw_app/models/gdp_data.dart';
 import 'package:hackdfw_app/screens/portfolio_screen.dart';
