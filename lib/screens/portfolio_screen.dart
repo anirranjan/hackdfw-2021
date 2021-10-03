@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hackdfw_app/models/gdp_data.dart';
+import 'package:hackdfw_app/providers/userinfo_provider.dart';
+import 'package:provider/src/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
@@ -19,9 +21,6 @@ class SecondScreenState extends State<SecondScreen> {
     GDPData('Total', 0, Color(0xE74236)),
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
-
-  String predictionMessage = 'No Prediction';
-  var tickers = ["AAPL", "GOOGL", "MSFT", "AMZN"];
 
   Future<Map<String, dynamic>> postRequest(
       String path, Map<String, dynamic> payload) async {
@@ -73,8 +72,9 @@ class SecondScreenState extends State<SecondScreen> {
             TextButton(
               onPressed: () async {
                 final jsonResponse = await postRequest(
-                    "/portfolio_stats",
-                    <String, dynamic>{"tags": tickers});
+                    "/portfolio_stats", <String, dynamic>{
+                  "tags": context.read<UserInfoProvider>().userPortfolio
+                });
                 setState(() {
                   _chartData = <GDPData>[];
                   int e = jsonResponse['environmentalScore'].round();
