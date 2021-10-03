@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class StockViewer extends StatefulWidget {
+  const StockViewer({Key? key}) : super(key: key);
+
   @override
   _StockViewerState createState() => _StockViewerState();
 }
@@ -16,28 +18,28 @@ class _StockViewerState extends State<StockViewer> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stock Viewer'),
+        title: const Text('Stock Viewer'),
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(padding: const EdgeInsets.all(10.0)),
+          const Padding(padding: EdgeInsets.all(10.0)),
           Text(company,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               )),
           Text(ticker,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               )),
           Text(companyType,
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               )),
@@ -53,7 +55,7 @@ class _StockViewerState extends State<StockViewer> {
                 companyType = jsonResponse['companyType'];
               });
             },
-            child: Text('Get Company Data'),
+            child: const Text('Get Company Data'),
           ),
         ],
       ),

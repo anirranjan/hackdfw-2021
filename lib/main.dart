@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,10 +7,11 @@ import 'dart:convert' as convert;
 import 'stock_viewer.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_charts/sparkcharts.dart';
+
+import 'screens/aboout_screen.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -20,19 +20,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         title: 'HackDFW Submission',
-        theme: new ThemeData(
+        theme: ThemeData(
             scaffoldBackgroundColor: const Color(0xffF8F7E3),
-            appBarTheme: AppBarTheme(color: const Color(0xff382E31)),
+            appBarTheme: const AppBarTheme(color: Color(0xff382E31)),
             textTheme: Theme.of(context).textTheme.apply(
-                  bodyColor: Color(0xff382E31),
-                  displayColor: Color(0xff382E31),
+                  bodyColor: const Color(0xff382E31),
+                  displayColor: const Color(0xff382E31),
                 )),
-        home: HomePage(),
+        home: const HomePage(),
         debugShowCheckedModeBanner: false);
   }
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
   @override
   FirstScreen createState() => FirstScreen();
 }
@@ -40,7 +42,7 @@ class HomePage extends StatefulWidget {
 class FirstScreen extends State<HomePage> {
   String predictionMessage = 'No Prediction';
 
-  var random = new Random();
+  var random = Random();
 
   List<GDPData> _chartData = [];
 
@@ -64,7 +66,7 @@ class FirstScreen extends State<HomePage> {
             TextButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => AboutScreen()));
+                      MaterialPageRoute(builder: (_) => const AboutScreen()));
                 },
                 child: Text('About ESG',
                     style: TextStyle(color: Color(0xffF8F7E3)))),
@@ -87,7 +89,7 @@ class FirstScreen extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
               height: 600,
               width: 600,
               child: SfCircularChart(
@@ -138,6 +140,8 @@ class FirstScreen extends State<HomePage> {
 }
 
 class SecondScreen extends StatefulWidget {
+  const SecondScreen({Key? key}) : super(key: key);
+
   @override
   SecondScreenState createState() => SecondScreenState();
 }
@@ -149,19 +153,20 @@ class SecondScreenState extends State<SecondScreen> {
     GDPData('Social', 62, Color(0xF2CD32)),
     GDPData('Average', 63, Color(0xE74236))
   ];
-  TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
+  final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
 
   String predictionMessage = 'No Prediction';
 
-  Future<Map<String, dynamic>> PostRequest(String uri, Map<String, dynamic> payload) async {
-      var url = Uri.http(uri, "");
-      // final response = await http.get(url);
-      final response = await http.post(
-        url,
-        body: jsonEncode(payload),
-      );
+  Future<Map<String, dynamic>> postRequest(
+      String uri, Map<String, dynamic> payload) async {
+    var url = Uri.http(uri, "");
+    // final response = await http.get(url);
+    final response = await http.post(
+      url,
+      body: jsonEncode(payload),
+    );
 
-      return convert.jsonDecode(response.body) as Map<String, dynamic>;
+    return convert.jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   @override
@@ -173,18 +178,16 @@ class SecondScreenState extends State<SecondScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
+            SizedBox(
                 height: 600,
                 width: 600,
                 child: SfCircularChart(
                     tooltipBehavior: _tooltipBehavior,
                     annotations: <CircularChartAnnotation>[
                       CircularChartAnnotation(
-                        widget: Container(
-                            child: Text(_chartData[3].gdp.toString(),
-                                style: TextStyle(
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.normal))),
+                        widget: Text(_chartData[3].gdp.toString(),
+                            style: const TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.normal)),
                         radius: '0%',
                       )
                     ],
@@ -195,7 +198,8 @@ class SecondScreenState extends State<SecondScreen> {
                               data.pointColor,
                           xValueMapper: (GDPData data, _) => data.continent,
                           yValueMapper: (GDPData data, _) => data.gdp,
-                          dataLabelSettings: DataLabelSettings(isVisible: true),
+                          dataLabelSettings:
+                              const DataLabelSettings(isVisible: true),
                           enableTooltip: true,
                           maximumValue: 2500,
                           cornerStyle: CornerStyle.bothCurve)
@@ -218,7 +222,7 @@ class SecondScreenState extends State<SecondScreen> {
                   _chartData.add(GDPData('Average', average, Color(0xE74236)));
                 });
               },
-              child: Text('Get Wheel Data'),
+              child: const Text('Get Wheel Data'),
             ),
             Text(predictionMessage,
                 textAlign: TextAlign.center,
@@ -228,50 +232,17 @@ class SecondScreenState extends State<SecondScreen> {
                 )),
             TextButton(
               onPressed: () async {
-                var jsonResponse = await PostRequest("user:pass@localhost:5000", <String, String>{"tag": "AAPL"});
+                var jsonResponse = await postRequest("user:pass@localhost:5000",
+                    <String, String>{"tag": "AAPL"});
                 setState(() {
-                  predictionMessage = "Prediction: " + jsonResponse['prediction'].toString();
+                  predictionMessage =
+                      "Prediction: " + jsonResponse['prediction'].toString();
                 });
               },
-              child: Text('Get Prediction Data'),
+              child: const Text('Get Prediction Data'),
             ),
           ],
         ));
-  }
-}
-
-class AboutScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar:
-            AppBar(title: Image.asset('assets/equitree-beige.png', height: 75)),
-        body: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('What is an ESG Score?',
-                        style: TextStyle(
-                            fontSize: 48, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 25),
-                    Text(
-                        'An ESG score is a numerical judgement of a company\'s policies and\n'
-                        'actions regarding three criteria: Environmental, Social, and Corporate\n'
-                        'Governance. The better their practices and impact in the present, the\n'
-                        'higher the score. Each criteria is rated individually, and a total score\n'
-                        'is calculated from those three. The score not only reflects the values\n'
-                        'of the company, but also its adaptability for the future. For example,\n'
-                        'scoring high on Environmental means your company wouldn\'t be\n'
-                        'harmed by more stringent regulations being placed on them in the future.',
-                        style: TextStyle(
-                            fontSize: 36, fontWeight: FontWeight.normal))
-                  ]),
-              SizedBox(width: 250)
-            ]));
   }
 }
 
