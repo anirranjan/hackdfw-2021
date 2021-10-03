@@ -22,21 +22,24 @@ def index():
         return jsonify({"nothing_to_display": "Nothing to display!"})
     else:
         request_data = json.loads(request.data.decode('utf-8'))
-        tag = str(request_data["tag"])
+        tag = str(request_data["tag"]).upper()
         return jsonify(get_scores(tag))
 
 @app.route("/portfolio_stats", methods=["POST"])
 def portfolio_stats():
     request_data = json.loads(request.data.decode('utf-8'))
-    tags = [str(s) for s in request_data["tags"]]
+    tags = [str(s).upper() for s in request_data["tags"]]
     return jsonify(get_portfolio_average(tags))
 
 def get_portfolio_average(tags):
     out = {"prediction": 0, "environmentalScore": 0, "socialScore": 0, "governanceScore": 0, "delta": 0}
     for tag in tags:
-        for k, v in get_scores(tag).items():
-            out[k] += v
-    out = {k: int(v / len(out)) for k, v in out.items()}
+        try:
+            for k, v in get_scores(tag).items():
+                out[k] += v
+        except:
+            print("Couldn't get stuff for", tag)
+    out = {k: int(v / len(tags)) for k, v in out.items()}
     return out
 
 def get_scores(tag):
@@ -58,7 +61,7 @@ def get_scores(tag):
 @app.route('/company', methods = ['POST'])
 def getCompany():
     request_data = json.loads(request.data.decode('utf-8'))
-    tag = str(request_data["tag"])
+    tag = str(request_data["tag"]).upper()
 
     tinfo = yf.Ticker(tag).info
 

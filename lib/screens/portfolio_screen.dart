@@ -21,7 +21,8 @@ class SecondScreenState extends State<SecondScreen> {
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
 
   String predictionMessage = 'No Prediction';
-  var tickers = ["AAPL", "GOOGL", "MSFT", "AMZN"];
+  var tickers = [];
+  String newTicker = "";
 
   Future<Map<String, dynamic>> postRequest(
       String path, Map<String, dynamic> payload) async {
@@ -35,6 +36,23 @@ class SecondScreenState extends State<SecondScreen> {
     return convert.jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  void updateWheel() async {
+      final jsonResponse = await postRequest(
+          "/portfolio_stats",
+          <String, dynamic>{"tags": tickers});
+      setState(() {
+        _chartData = <GDPData>[];
+        int e = jsonResponse['environmentalScore'].round();
+        int s = jsonResponse['socialScore'].round();
+        int g = jsonResponse['governanceScore'].round();
+        int average = jsonResponse['prediction'].round();
+        _chartData.add(GDPData('Governmental', g, Color(0x027333)));
+        _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
+        _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
+        _chartData.add(GDPData('Total', average, Color(0xE74236)));
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,8 +63,8 @@ class SecondScreenState extends State<SecondScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-                height: 600,
                 width: 600,
+                height: 600,
                 child: SfCircularChart(
                     tooltipBehavior: _tooltipBehavior,
                     annotations: <CircularChartAnnotation>[
@@ -70,25 +88,54 @@ class SecondScreenState extends State<SecondScreen> {
                           maximumValue: 100,
                           cornerStyle: CornerStyle.bothCurve)
                     ])),
-            TextButton(
-              onPressed: () async {
-                final jsonResponse = await postRequest(
-                    "/portfolio_stats",
-                    <String, dynamic>{"tags": tickers});
-                setState(() {
-                  _chartData = <GDPData>[];
-                  int e = jsonResponse['environmentalScore'].round();
-                  int s = jsonResponse['socialScore'].round();
-                  int g = jsonResponse['governanceScore'].round();
-                  int average = jsonResponse['prediction'].round();
-                  _chartData.add(GDPData('Governmental', g, Color(0x027333)));
-                  _chartData.add(GDPData('Social', s, Color(0xF2CD32)));
-                  _chartData.add(GDPData('Environmental', e, Color(0x410F57)));
-                  _chartData.add(GDPData('Total', average, Color(0xE74236)));
-                });
-              },
-              child: const Text('Get Wheel Data'),
+            Column(
+                children: <Widget>[
+                    Spacer(),
+                    Row(children: [
+                        SizedBox(
+                        width: 300,
+                            child: TextField(
+                                onChanged: (text) {
+                                    newTicker = text;
+                                },
+                                decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    hintText: 'Add a ticker to your portfolio',
+                                ),
+                            )
+                        ),
+                        TextButton(
+                            onPressed: () {
+                                if(newTicker != "" && !tickers.contains(newTicker)){
+                                    tickers.add(newTicker);
+                                    updateWheel();
+                                }
+                            },
+                            child: const Text("+"),
+                        )]
+                    ),
+                    SizedBox(
+                    width: 500,
+                    height: 200,
+                    child:
+                        ListView.builder(
+                            padding: const EdgeInsets.all(8),
+                            itemCount: tickers.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                    height: 50,
+                                    margin: EdgeInsets.all(2),
+                                    child: Center(
+                                        child: Text('${tickers[index]}')
+                                    )
+                                );
+                            }
+                        )
+                    ),
+                    Spacer()
+                ]
             ),
+
             /*
             TextField(
                 onChanged: (text) {
