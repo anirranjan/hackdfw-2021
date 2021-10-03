@@ -26,6 +26,7 @@ class _SecondScreenState extends State<SecondScreen> {
   ];
   final TooltipBehavior _tooltipBehavior = TooltipBehavior(enable: true);
   var enableOverview = true;
+  var enableRealData = true;
 
   String predictionMessage = 'No Prediction';
   String newTicker = "";
@@ -72,7 +73,29 @@ class _SecondScreenState extends State<SecondScreen> {
               const Spacer(),
               Row(
                 children: [
-                  const Text("Profile Overview", style: TextStyle(fontSize: 24),),
+                  const Text(
+                    "Current Data",
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  Switch(
+                    value: enableRealData,
+                    onChanged: (bool isOn) {
+                      setState(() {
+                        enableRealData = isOn;
+                        print(isOn);
+                        isOn = !isOn;
+                      });
+                    },
+                    activeColor: EquiTreeColors.brownish,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const Text(
+                    "Profile Overview",
+                    style: TextStyle(fontSize: 24),
+                  ),
                   Switch(
                     value: enableOverview,
                     onChanged: (bool isOn) {
@@ -88,19 +111,19 @@ class _SecondScreenState extends State<SecondScreen> {
               ),
               Row(children: [
                 Container(
-                    width: 300,
-                    child: DropdownSearch<String>.multiSelection(
-                        mode: Mode.MENU,
-                        showSelectedItems: true,
-                        showSearchBox: true,
-                        items: stocks,
-                        label: "Portfolio stocks",
-                        hint: "Add a stock...",
-                        onChange: (List<String> selected) {
-                          userInfoProvider.userPortfolio.tickers = selected;
-                          updateWheel(selected);
-                        },
-                        selectedItems: []),
+                  width: 300,
+                  child: DropdownSearch<String>.multiSelection(
+                      mode: Mode.MENU,
+                      showSelectedItems: true,
+                      showSearchBox: true,
+                      items: stocks,
+                      label: "Portfolio stocks",
+                      hint: "Add a stock...",
+                      onChange: (List<String> selected) {
+                        userInfoProvider.userPortfolio.tickers = selected;
+                        updateWheel(selected);
+                      },
+                      selectedItems: []),
                 ),
               ]),
               SizedBox(height: 20),
@@ -126,7 +149,8 @@ class _SecondScreenState extends State<SecondScreen> {
                         tooltipBehavior: _tooltipBehavior,
                         annotations: <CircularChartAnnotation>[
                           CircularChartAnnotation(
-                            widget: Text("ESG: " + _chartData[3].score.toString(),
+                            widget: Text(
+                                "ESG: " + _chartData[3].score.toString(),
                                 style: const TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.normal)),
