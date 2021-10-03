@@ -73,7 +73,10 @@ class _SecondScreenState extends State<SecondScreen> {
               const Spacer(),
               Row(
                 children: [
-                  const Text("Profile Overview", style: TextStyle(fontSize: 24),),
+                  const Text(
+                    "Profile Overview",
+                    style: TextStyle(fontSize: 24),
+                  ),
                   Switch(
                     value: enableOverview,
                     onChanged: (bool isOn) {
@@ -88,20 +91,21 @@ class _SecondScreenState extends State<SecondScreen> {
               ),
               Row(children: [
                 Container(
-                    width: 300,
-                    child: DropdownSearch<String>.multiSelection(
-                        mode: Mode.MENU,
-                        showSelectedItems: true,
-                        showSearchBox: true,
-                        items: stocks,
-                        label: "Portfolio stocks",
-                        hint: "Add a stock...",
-                        onChange: (List<String> selected) {
-                          userInfoProvider.updateWheel(selected);
-                          updateWheel(selected);
-                        },
-                        selectedItems: []),
-                ),
+                  width: 300,
+                  child: DropdownSearch<String>.multiSelection(
+                    mode: Mode.MENU,
+                    showSelectedItems: true,
+                    showSearchBox: true,
+                    items: stocks,
+                    label: "Portfolio stocks",
+                    hint: "Add a stock...",
+                    onChange: (List<String> selected) {
+                      userInfoProvider.userPortfolio.tickers = selected;
+                      updateWheel(selected);
+                    },
+                    selectedItems: userInfoProvider.userPortfolio.tickers,
+                  ),
+                )
               ]),
               SizedBox(height: 20),
               Container(
@@ -119,74 +123,86 @@ class _SecondScreenState extends State<SecondScreen> {
               const Spacer()
             ]),
             enableOverview
-                ? Column(
-                children: [
-                  Row(
-                    children: [
-                      const Text("Real:", style: TextStyle(fontSize: 24),),
-                      Switch(
-                        value: enabledReal,
-                        onChanged: (bool isOn) {
-                          setState(() {
-                            enabledReal = !enabledReal;
+                ? Column(children: [
+                    Row(
+                      children: [
+                        const Text(
+                          "Real:",
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        Switch(
+                          value: enabledReal,
+                          onChanged: (bool isOn) {
+                            setState(() {
+                              enabledReal = !enabledReal;
 
-                            postRequest("/set_real", <String, bool>{"useReal": enabledReal});
-                            updateWheel(userInfoProvider.userPortfolio.tickers);
-                          });
-                        },
-                        activeColor: EquiTreeColors.brownish,
-                      ),
-                    ],
-                  ),
-                  Container(
-                    width: 600,
-                    height: 600,
-                    child: SfCircularChart(
-                        tooltipBehavior: _tooltipBehavior,
-                        annotations: <CircularChartAnnotation>[
-                          CircularChartAnnotation(
-                            widget: Text("Predicted\nESG: " + _chartData[3].score.toString(),
-                                style: const TextStyle(
-                                    fontSize: 36,
-                                    fontWeight: FontWeight.normal)),
-                            radius: '0%',
-                          )
-                        ],
-                        series: <CircularSeries>[
-                          RadialBarSeries<ESGData, String>(
-                              dataSource: _chartData,
-                              pointColorMapper: (ESGData data, _) =>
-                                  data.pointColor,
-                              xValueMapper: (ESGData data, _) => data.category,
-                              yValueMapper: (ESGData data, _) => data.score,
-                              dataLabelSettings:
-                                  const DataLabelSettings(isVisible: true),
-                              enableTooltip: true,
-                              maximumValue: 100,
-                              cornerStyle: CornerStyle.bothCurve)
-                        ]))])
-                : Column(
-                children: [
-                  Row(
-                    children: [
-                      const Text("Real:", style: TextStyle(fontSize: 24),),
-                      Switch(
-                        value: enabledReal,
-                        onChanged: (bool isOn) {
-                          setState(() {
-                            enabledReal = !enabledReal;
+                              postRequest("/set_real",
+                                  <String, bool>{"useReal": enabledReal});
+                              updateWheel(
+                                  userInfoProvider.userPortfolio.tickers);
+                            });
+                          },
+                          activeColor: EquiTreeColors.brownish,
+                        ),
+                      ],
+                    ),
+                    Container(
+                        width: 600,
+                        height: 600,
+                        child: SfCircularChart(
+                            tooltipBehavior: _tooltipBehavior,
+                            annotations: <CircularChartAnnotation>[
+                              CircularChartAnnotation(
+                                widget: Text(
+                                    "ESG: " + _chartData[3].score.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 36,
+                                        fontWeight: FontWeight.normal)),
+                                radius: '0%',
+                              )
+                            ],
+                            series: <CircularSeries>[
+                              RadialBarSeries<ESGData, String>(
+                                  dataSource: _chartData,
+                                  pointColorMapper: (ESGData data, _) =>
+                                      data.pointColor,
+                                  xValueMapper: (ESGData data, _) =>
+                                      data.category,
+                                  yValueMapper: (ESGData data, _) => data.score,
+                                  dataLabelSettings:
+                                      const DataLabelSettings(isVisible: true),
+                                  enableTooltip: true,
+                                  maximumValue: 100,
+                                  cornerStyle: CornerStyle.bothCurve)
+                            ]))
+                  ])
+                : Column(children: [
+                    Row(
+                      children: [
+                        const Text(
+                          "Real:",
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        Switch(
+                          value: enabledReal,
+                          onChanged: (bool isOn) {
+                            setState(() {
+                              enabledReal = !enabledReal;
 
-                            postRequest("/set_real", <String, bool>{"useReal": enabledReal});
-                            updateWheel(userInfoProvider.userPortfolio.tickers);
-                          });
-                        },
-                        activeColor: EquiTreeColors.brownish,
-                      ),
-                    ],
-                  ),
-                  StockViewer(
-                    ticker: userInfoProvider.selectedTicker,
-                  )]),
+                              postRequest("/set_real",
+                                  <String, bool>{"useReal": enabledReal});
+                              updateWheel(
+                                  userInfoProvider.userPortfolio.tickers);
+                            });
+                          },
+                          activeColor: EquiTreeColors.brownish,
+                        ),
+                      ],
+                    ),
+                    StockViewer(
+                      ticker: userInfoProvider.selectedTicker,
+                    )
+                  ]),
           ],
         ));
   }
